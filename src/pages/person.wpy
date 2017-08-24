@@ -1,0 +1,15 @@
+<template>
+geren
+</template>
+
+<script>
+  import wepy from 'wepy'
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: '个人中心'
+    }
+    data = {
+      msg: 'hello world'
+    }
+  }
+</script>

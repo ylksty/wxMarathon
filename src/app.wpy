@@ -27,15 +27,15 @@ export default class extends wepy.app {
     },
     tabBar: {
       list: [{
-        pagePath: "pages/index",
-        text: "首页",
-        iconPath: "image/shouye.png",
-        selectedIconPath: "image/shouye-on.png"
+        pagePath: 'pages/index',
+        text: '首页',
+        iconPath: 'image/shouye.png',
+        selectedIconPath: 'image/shouye-on.png'
       }, {
-        pagePath: "pages/person",
-        text: "个人",
-        iconPath: "image/geren.png",
-        selectedIconPath: "image/geren-on.png"
+        pagePath: 'pages/person',
+        text: '个人',
+        iconPath: 'image/geren.png',
+        selectedIconPath: 'image/geren-on.png'
       }]
     }
   }

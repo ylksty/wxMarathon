@@ -1,8 +1,19 @@
 <style lang="less">
+@yellow: yellow;
+  .triangle {
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    border-width: 12px;
+    border-color: black transparent transparent transparent;
+    border-style: solid dashed dashed dashed;
+  }
+
   .userinfo {
     display: flex;
     flex-direction: column;
     align-items: center;
+    background: yellow;
   }
 
   .userinfo-avatar {
@@ -17,13 +28,14 @@
 </style>
 <template>
   <view class="container">
+    <view class="triangle"></view>
     <view class="userinfo" @tap="handleViewTap">
       <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" background-size="cover"/>
       <view class="userinfo-nickname">{{ userInfo.nickName }}</view>
     </view>
 
     <panel>
-      <view class="title" slot="title">测试数据绑定ss</view>
+      <view class="title" slot="title">测试数据绑定</view>
 
       <text class="info">{{normalTitle}}</text>
       <text class="info">{{setTimeoutTitle}}</text>

@@ -1,0 +1,35 @@
+<style lang="less">
+
+</style>
+<template>
+  <view class="container">
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import configMixin from '../mixins/config'
+  import toastMixin from '../mixins/toast'
+
+  export default class demo extends wepy.page {
+    mixins = [configMixin, toastMixin]
+    config = {
+      navigationBarTitleText: 'demos'
+    }
+
+    components = {}
+
+    data = {
+    }
+
+    computed = {}
+
+    methods = {
+    }
+
+    events = {}
+
+    onLoad() {
+    }
+  }
+</script>

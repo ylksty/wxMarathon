@@ -1,11 +1,13 @@
 <style lang="less">
 .container {
   height: 100%;
+  width: 750rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
+  color: #666666;
 }
 </style>
 
@@ -17,7 +19,8 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/index',
-      'pages/person'
+      'pages/person',
+      'pages/demo'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -33,6 +36,11 @@ export default class extends wepy.app {
         selectedIconPath: 'image/shouye-on.png'
       }, {
         pagePath: 'pages/person',
+        text: 'start',
+        iconPath: 'image/shanghu.png',
+        selectedIconPath: 'image/shanghu-on.png'
+      }, {
+        pagePath: 'pages/demo',
         text: '个人',
         iconPath: 'image/geren.png',
         selectedIconPath: 'image/geren-on.png'

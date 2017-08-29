@@ -4,6 +4,7 @@
   @cl3: #333333;
   .info {
     width: 600rpx;
+    font-size: 30rpx;
     .line {
       width: inherit;
       text {
@@ -12,17 +13,17 @@
       }
       .left {
         margin-left: 0rpx;
-        color: @cl6;
       }
       .right {
         margin-right: 0rpx;
+        color: @cl3;
       }
     }
   }
   .hr {
     width: inherit;
     height: 2rpx;
-    border-bottom: 2rpx solid @cl9;
+    border-bottom: 2rpx dashed @cl9;
     margin: 18rpx;
   }
   .section {
@@ -37,25 +38,34 @@
 </style>
 <template>
   <view class="container">
+    <view>
+      配速计算
+    </view>
+    <view class="hr"></view>
     <view class="info">
-      <view class="line"><text class="left">1km</text><text class="right">4:30</text></view>
-      <view class="line"><text class="left">10km</text><text class="right">4:30</text></view>
-      <view class="line"><text class="left">21.0975km</text><text class="right">4:30</text></view>
-      <view class="line"><text class="left">42.195km</text><text class="right">4:30</text></view>
-      <view class="line"><text class="left">步幅</text><text class="right">4:30</text></view>
+      <view class="line"><text class="left">1km</text><text class="right">{{kmCom}}</text></view>
+      <view class="line"><text class="left">10km</text><text class="right">{{tenkmCom}}</text></view>
+      <view class="line"><text class="left">21.0975km</text><text class="right">{{halfkmCom}}</text></view>
+      <view class="line"><text class="left">42.195km</text><text class="right">{{fullkmCom}}</text></view>
     </view>
     <view class="hr"></view>
     <view class="section">
       <text class="title">配速(分钟)</text>
-      <slider min="0" max="16" value="4" show-value/>
+      <slider min="0" max="16" value="{{min}}" show-value bindchange="minChange"/>
     </view>
     <view class="section">
       <text class="title">配速(秒)</text>
-      <slider min="0" max="59" value="30" show-value/>
+      <slider min="0" max="59" value="{{sec}}" show-value bindchange="secChange"/>
     </view>
     <view class="section">
-      <text class="title">步频(分钟)</text>
-      <slider min="120" max="200" value="185" show-value/>
+      <text class="title">步频(步/分钟)</text>
+      <slider min="120" max="200" value="{{cadence}}" show-value bindchange="cadenceChange"/>
+    </view>
+    <view class="hr"></view>
+    <view class="info">
+      <view class="line"><text class="left">m/s</text><text class="right">{{msCom}}</text></view>
+      <view class="line"><text class="left">km/h</text><text class="right">{{nkmCom}}</text></view>
+      <view class="line"><text class="left">步幅</text><text class="right">{{bufuCom}}</text></view>
     </view>
   </view>
 </template>
@@ -74,16 +84,104 @@
     components = {}
 
     data = {
+      const: {
+        KM: 1000,
+        TEN_KM: 10000,
+        HALF_MARATHON: 21092,
+        FULL_MARATHON: 42193
+      },
+      seckm: 292,
+      min: 0,
+      sec: 0,
+      cadence: 185
     }
 
-    computed = {}
+    watch = {
+      min() {
+        this.seckm = this.sec + this.min * 60
+      },
+      sec() {
+        this.seckm = this.sec + this.min * 60
+      }
+    }
+
+    computed = {
+      kmCom() {
+        return this.secondsToMin(this.seckm)
+      },
+      tenkmCom() {
+        return this.secondsToMin(this.seckm * 10)
+      },
+      halfkmCom() {
+        return this.secondsToMin(this.seckm * this.const.HALF_MARATHON / this.const.KM)
+      },
+      fullkmCom() {
+        return this.secondsToMin(this.seckm * this.const.FULL_MARATHON / this.const.KM)
+      },
+      msCom() {
+        return Math.round(this.const.KM * 100 / this.seckm) / 100
+      },
+      nkmCom() { // 公里每小时
+        return Math.round(3600 * 100 / this.seckm) / 100
+      },
+      bufuCom() {
+        var secadence = this.cadence / 60
+        return Math.round(this.const.KM * 10000 / (secadence * this.seckm)) / 100
+      }
+    }
 
     methods = {
+      secChange(e) {
+        this.sec = e.detail.value
+      },
+      minChange(e) {
+        this.min = e.detail.value
+      },
+      cadenceChange(e) {
+        this.cadence = e.detail.value
+      }
     }
 
-    events = {}
-
     onLoad() {
+      this.min = this.secondsPart(this.seckm, 'min')
+      this.sec = this.secondsPart(this.seckm, 'seconds')
+    }
+    secondsToMin(seconds) {
+      var minS = ''
+      var minObj = {h: 0, m: 0, s: 0}
+
+      minObj.h = this.secondsPart(seconds, 'hour')
+      if (minObj.h > 0) {
+        seconds -= minObj.h * 3600
+      }
+      minObj.m = this.secondsPart(seconds, 'min')
+      if (minObj.m > 0) {
+        seconds -= minObj.m * 60
+      }
+      seconds = Math.round(seconds)
+      seconds += ''
+      minObj.s = (seconds.length === 2) ? seconds : '0' + seconds
+      if (minObj.h > 0) {
+        minS += minObj.h + ':'
+        minS += minObj.m + ':'
+        minS += minObj.s
+        return minS
+      } else if (minObj.m > 0) {
+        minS += minObj.m + ':'
+        minS += minObj.s
+      } else {
+        minS += minObj.s
+      }
+      return minS
+    }
+    secondsPart(seconds, type) {
+      if (type === 'seconds') {
+        return seconds % 60
+      } else if (type === 'min') {
+        return Math.floor(seconds / 60)
+      } else if (type === 'hour') {
+        return Math.floor(seconds / 3600)
+      }
     }
   }
 </script>

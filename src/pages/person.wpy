@@ -1,15 +1,108 @@
+<style lang="less">
+  @cl9: #999999;
+  @cl6: #666666;
+  @cl3: #333333;
+  #myMap {
+    width: inherit;
+    height: 600rpx;
+  }
+</style>
 <template>
-geren
+  <view class="container">
+    <map id="myMap" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" show-location></map>
+    <button type="primary" bindtap="getCenterLocation">获取位置</button>
+    <button type="primary" bindtap="moveToLocation">移动位置</button>
+    <button type="primary" bindtap="translateMarker">移动标注</button>
+    <button type="primary" bindtap="includePoints">缩放视野展示所有经纬度</button>
+  </view>
 </template>
 
 <script>
   import wepy from 'wepy'
-  export default class Index extends wepy.page {
+  import authMixin from '../mixins/auth'
+  export default class Person extends wepy.page {
+    mixins = [authMixin]
     config = {
       navigationBarTitleText: '个人中心'
     }
     data = {
-      msg: 'hello world'
+      msg: 'hello world',
+      longitude: 0,
+      latitude: 0,
+      mapCtx: {},
+      markers: [{
+        title: 'bnt',
+        id: 0,
+        latitude: 30.274085,
+        longitude: 120.15507,
+        width: 50,
+        height: 50
+      }, {
+        title: 'abc',
+        id: 1,
+        latitude: 30.274085,
+        longitude: 120.153,
+        width: 50,
+        height: 50
+      }]
+    }
+    methods = {
+      getCenterLocation() {
+        this.mapCtx.getCenterLocation({
+          success: function(res) {
+            console.log(res.longitude)
+            console.log(res.latitude)
+          }
+        })
+      },
+      moveToLocation() {
+        this.mapCtx.moveToLocation()
+      },
+      translateMarker() {
+        this.mapCtx.translateMarker({
+          markerId: 0,
+          autoRotate: true,
+          duration: 1000,
+          destination: {
+            latitude: 30.27,
+            longitude: 120.15507
+          },
+          animationEnd() {
+            console.log('animation end')
+          },
+          fail(res) {
+            console.log(res)
+          }
+        })
+      },
+      includePoints() {
+        this.mapCtx.includePoints({
+          padding: [10],
+          points: [{
+            latitude: 30.274085,
+            longitude: 120.15507
+          }, {
+            latitude: 30.27,
+            longitude: 120.15507
+          }]
+        })
+      }
+    }
+    onLoad() {
+      this.authGet('userLocation').then(() => {
+        wepy.getLocation({
+          success: res => {
+            console.log(res)
+            this.longitude = res.longitude
+            this.latitude = res.latitude
+            this.$apply();
+          }
+        })
+      })
+    }
+    onReady(e) {
+      // 使用 wx.createMapContext 获取 map 上下文
+      this.mapCtx = wepy.createMapContext('myMap')
     }
   }
 </script>

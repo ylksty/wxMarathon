@@ -18,8 +18,8 @@ import 'wepy-async-function'
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/index',
       'pages/person',
+      'pages/index',
       'pages/demo'
     ],
     window: {
@@ -49,7 +49,8 @@ export default class extends wepy.app {
   }
 
   globalData = {
-    userInfo: null
+    userInfo: null,
+    location: null
   }
 
   constructor () {
@@ -58,7 +59,7 @@ export default class extends wepy.app {
   }
 
   onLaunch() {
-    this.testAsync()
+//    this.testAsync()
   }
 
   sleep (s) {
@@ -77,12 +78,26 @@ export default class extends wepy.app {
   getUserInfo(cb) {
     const that = this
     if (this.globalData.userInfo) {
-      return this.globalData.userInfo
+      cb && cb(this.globalData.userInfo)
     }
     wepy.getUserInfo({
       success (res) {
         that.globalData.userInfo = res.userInfo
         cb && cb(res.userInfo)
+      }
+    })
+  }
+  getLocation(cb) {
+    const that = this
+    if (this.globalData.location) {
+      console.log(234)
+      return this.globalData.location
+    }
+    wepy.getLocation({
+      success (res) {
+        console.log(res)
+//        that.globalData.location = abc
+        cb && cb(that.globalData.location)
       }
     })
   }

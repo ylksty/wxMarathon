@@ -9,19 +9,21 @@
 </style>
 <template>
   <view class="container">
-    <map id="myMap" longitude="{{longitude}}" latitude="{{latitude}}" markers="{{markers}}" show-location></map>
+    <map id="myMap" longitude="{{longitude}}" latitude="{{latitude}}" controls="{{controls}}" bindcontroltap="controltap" markers="{{markers}}" include-points="{{includePoints}}" show-location></map>
     <button type="primary" bindtap="getCenterLocation">获取位置</button>
     <button type="primary" bindtap="moveToLocation">移动位置</button>
     <button type="primary" bindtap="translateMarker">移动标注</button>
     <button type="primary" bindtap="includePoints">缩放视野展示所有经纬度</button>
+    <button type="primary" bindtap="dClick">d</button>
   </view>
 </template>
 
 <script>
   import wepy from 'wepy'
   import authMixin from '../mixins/auth'
+  import comMixin from '../mixins/com'
   export default class Person extends wepy.page {
-    mixins = [authMixin]
+    mixins = [comMixin, authMixin]
     config = {
       navigationBarTitleText: '个人中心'
     }
@@ -30,23 +32,24 @@
       longitude: 0,
       latitude: 0,
       mapCtx: {},
-      markers: [{
-        title: 'bnt',
-        id: 0,
-        latitude: 30.274085,
-        longitude: 120.15507,
-        width: 50,
-        height: 50
-      }, {
-        title: 'abc',
+      markers: [],
+      controls: [{
         id: 1,
-        latitude: 30.274085,
-        longitude: 120.153,
-        width: 50,
-        height: 50
-      }]
+        iconPath: '../image/shouye-on.png',
+        position: {
+          left: 0,
+          top: 300 - 50,
+          width: 50,
+          height: 50
+        },
+        clickable: true
+      }],
+      includePoints: [],
     }
     methods = {
+      controltap(e) {
+        console.log(e.controlId)
+      },
       getCenterLocation() {
         this.mapCtx.getCenterLocation({
           success: function(res) {
@@ -76,16 +79,14 @@
         })
       },
       includePoints() {
-        this.mapCtx.includePoints({
-          padding: [10],
-          points: [{
-            latitude: 30.274085,
-            longitude: 120.15507
-          }, {
-            latitude: 30.27,
-            longitude: 120.15507
-          }]
-        })
+        this.includePointsF()
+      },
+      dClick() {
+        this.markers[4].callout.bgColor = '#FF0000'
+        this.longitude = this.markers[4].longitude
+        this.latitude = this.markers[4].latitude
+        this.$apply()
+        console.log(234)
       }
     }
     onLoad() {
@@ -95,7 +96,51 @@
             console.log(res)
             this.longitude = res.longitude
             this.latitude = res.latitude
-            this.$apply();
+            var mdemo = {
+              title: 'demo',
+              callout: {content: 'demo', color: '#FFFAFA', fontSize: '22', borderRadius: '', bgColor: '#00CD00', padding: '', display: 'ALWAYS'},
+              id: 0,
+              longitude: '',
+              latitude: '',
+              height: 30
+            }
+            var markers = []
+            var includePoints = []
+            var data = [{
+              title: 'a',
+              latitude: 30.274085,
+              longitude: 120.153
+            }, {
+              title: 'b',
+              latitude: 30.2741,
+              longitude: 120.159
+            }, {
+              title: 'c',
+              latitude: 30.27,
+              longitude: 120.15507
+            }, {
+              title: 'd',
+              latitude: 30.26,
+              longitude: 120.15507
+            }]
+            data.unshift({title: 'my', latitude: this.latitude, longitude: this.longitude})
+            for (var i in data) {
+              let d = data[i]
+              let m = this.copy(mdemo)
+              m.id = i
+              m.title = d.title
+              m.callout.content = d.title
+              m.longitude = d.longitude
+              m.latitude = d.latitude
+              markers.push(m)
+              includePoints.push({longitude: d.longitude, latitude: d.latitude})
+            }
+            this.markers = markers
+            this.includePoints = includePoints
+
+            this.$apply()
+            this.includePointsF()
+            console.log(includePoints)
           }
         })
       })
@@ -103,6 +148,12 @@
     onReady(e) {
       // 使用 wx.createMapContext 获取 map 上下文
       this.mapCtx = wepy.createMapContext('myMap')
+    }
+    includePointsF() {
+      this.mapCtx.includePoints({
+        padding: [10],
+        points: this.includePoints
+      })
     }
   }
 </script>

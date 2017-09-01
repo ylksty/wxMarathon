@@ -18,7 +18,7 @@ import 'wepy-async-function'
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/person',
+      'pages/start',
       'pages/index',
       'pages/demo'
     ],
@@ -35,7 +35,7 @@ export default class extends wepy.app {
         iconPath: 'image/shouye.png',
         selectedIconPath: 'image/shouye-on.png'
       }, {
-        pagePath: 'pages/person',
+        pagePath: 'pages/start',
         text: 'start',
         iconPath: 'image/shanghu.png',
         selectedIconPath: 'image/shanghu-on.png'

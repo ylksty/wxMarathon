@@ -22,7 +22,7 @@
   import wepy from 'wepy'
   import authMixin from '../mixins/auth'
   import comMixin from '../mixins/com'
-  export default class Person extends wepy.page {
+  export default class Start extends wepy.page {
     mixins = [comMixin, authMixin]
     config = {
       navigationBarTitleText: '个人中心'
@@ -37,18 +37,18 @@
         id: 1,
         iconPath: '../image/shouye-on.png',
         position: {
-          left: 0,
-          top: 300 - 50,
-          width: 50,
-          height: 50
+          left: 10,
+          top: 290,
+          width: 30,
+          height: 30
         },
         clickable: true
       }],
-      includePoints: [],
+      includePoints: []
     }
     methods = {
       controltap(e) {
-        console.log(e.controlId)
+        this.mapCtx.moveToLocation()
       },
       getCenterLocation() {
         this.mapCtx.getCenterLocation({

@@ -15,13 +15,13 @@ export default class authMixin extends wepy.mixin {
     // 合成接口对应的授权名
     var scope = 'scope.' + key
     // Promise
-    return new Promise((authRes, authRej) => {
+    return new Promise((resolve, reject) => {
       // 获取授权情况
       _.getSetting().then(res => {
         console.log(res)
-        if (res.authSetting[scope]){
+        if (res.authSetting[scope]) {
           // 曾经确实是授过权，直接 resolved
-          authRes(true);
+          resolve(true)
         } else {
           // 尚未授权，则需要主动挑起授权
           _.authorize({
@@ -29,17 +29,17 @@ export default class authMixin extends wepy.mixin {
             scope: scope
           }).then(suc => {
             // 用户同意授权， resolved
-            authRes(suc)
+            resolve(suc)
           }, rej => {
             // 不然的话 就是我刚刚提到的递归请求授权了
             // 因此编写 reGet
-            this.reGet(scope, authRes)
+            this.reGet(scope, resolve)
           })
         }
       })
     })
   }
-  reGet(scope, authRes){
+  reGet(scope, authRes) {
     // 弹窗询问
     _.showModal({
       title: '授权提醒',
@@ -53,7 +53,7 @@ export default class authMixin extends wepy.mixin {
         // 用户结束了设置框
         // 但是还要检查
         _.getSetting().then(res => {
-          if (!res.authSetting[scope]){
+          if (!res.authSetting[scope]) {
             // 居然什么也没做就退出来设置了
             // 递归地 reGet
             // 写一个 setTimeout 防止太阻塞 JSCore ...
@@ -70,6 +70,5 @@ export default class authMixin extends wepy.mixin {
   }
   onLoad() {
     console.log('authMixin onLoad')
-
   }
 }
